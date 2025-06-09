@@ -1,0 +1,33 @@
+.woocommerce .products .product .woocommerce-loop-product__link .woocommerce-loop-product__title {
+    width: 100%;
+    max-width: 63%;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.woocommerce .products .product .woocommerce-loop-product__link .price {
+    display: none;
+}
+
+.woocommerce .products .product .button.add_to_cart_button {
+    display: none;
+}
+
+.woocommerce .products .product {
+    position: relative;
+}
+
+.woocommerce .products .product:after {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    height: 8px;
+    left: 50%;
+    bottom: 0;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    background: #F6921E;
+    transform: translateX(-50%);
+}
