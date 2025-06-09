@@ -1,0 +1,44 @@
+# Tạm thời bỏ qua tất cả mọi thứ
+*
+
+# Nhưng không bỏ qua chính file .gitignore
+!.gitignore
+
+# Không bỏ qua thư mục wp-content
+!wp-content/
+
+# Trong wp-content, bỏ qua mọi thứ
+wp-content/*
+
+# Nhưng cho phép các thư mục con này trong wp-content
+!wp-content/plugins/
+!wp-content/themes/
+
+# Ngoài ra, bỏ qua các file và thư mục phổ biến không cần thiết
+node_modules/
+.DS_Store
+.vscode/
+.idea/
+.env
+/.git/
+*.log
+*.zip
+*.tar.gz
+*.rar
+/wp-config.php # Thông tin nhạy cảm thường không nên đưa vào Git
+/wp-content/uploads/
+/wp-content/cache/
+/wp-content/blogs.dir/
+/wp-content/upgrade/
+/wp-content/mu-plugins/ # Nếu bạn không muốn theo dõi mu-plugins
+/wp-content/languages/
+/wp-content/wflogs/ # Wordfence logs
+/wp-content/aiowps_backups/ # All in One WP Security backups
+/wp-content/backup-*.zip # Các file backup
+/wp-content/.htaccess # Thường do plugin tạo, nên loại trừ
+/wp-admin/
+/wp-includes/
+/wp-*.php # Các file cốt lõi của WordPress (trừ wp-config.php đã xử lý)
+/index.php
+/readme.html
+/license.txt
