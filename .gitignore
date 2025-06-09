@@ -1,44 +1,52 @@
-# Tạm thời bỏ qua tất cả mọi thứ
-*
+# -----------------------------------------------------
+# .gitignore cho dự án WordPress (Cách tiếp cận đơn giản hơn)
+# -----------------------------------------------------
 
-# Nhưng không bỏ qua chính file .gitignore
-!.gitignore
-
-# Không bỏ qua thư mục wp-content
-!wp-content/
-
-# Trong wp-content, bỏ qua mọi thứ
-wp-content/*
-
-# Nhưng cho phép các thư mục con này trong wp-content
-!wp-content/plugins/
-!wp-content/themes/
-
-# Ngoài ra, bỏ qua các file và thư mục phổ biến không cần thiết
-node_modules/
-.DS_Store
-.vscode/
-.idea/
-.env
-/.git/
-*.log
-*.zip
-*.tar.gz
-*.rar
-/wp-config.php # Thông tin nhạy cảm thường không nên đưa vào Git
-/wp-content/uploads/
-/wp-content/cache/
-/wp-content/blogs.dir/
-/wp-content/upgrade/
-/wp-content/mu-plugins/ # Nếu bạn không muốn theo dõi mu-plugins
-/wp-content/languages/
-/wp-content/wflogs/ # Wordfence logs
-/wp-content/aiowps_backups/ # All in One WP Security backups
-/wp-content/backup-*.zip # Các file backup
-/wp-content/.htaccess # Thường do plugin tạo, nên loại trừ
+# Bỏ qua các thư mục và file cốt lõi của WordPress (KHÔNG phải wp-content)
 /wp-admin/
 /wp-includes/
-/wp-*.php # Các file cốt lõi của WordPress (trừ wp-config.php đã xử lý)
+/wp-activate.php
+/wp-blog-header.php
+/wp-comments-post.php
+/wp-config-sample.php
+/wp-cron.php
+/wp-links-opml.php
+/wp-load.php
+/wp-login.php
+/wp-mail.php
+/wp-settings.php
+/wp-signup.php
+/wp-trackback.php
+/xmlrpc.php
 /index.php
 /readme.html
 /license.txt
+.htaccess
+wp-config.php
+
+# Bỏ qua các thư mục/file phổ biến không cần thiết trong wp-content
+/wp-content/uploads/
+/wp-content/updraft/
+/wp-content/cache/
+/wp-content/blogs.dir/
+/wp-content/upgrade/
+/wp-content/mu-plugins/ # Bỏ qua nếu không muốn theo dõi mu-plugins
+/wp-content/languages/
+# Log của plugin Wordfence
+/wp-content/wflogs/
+# Backup của plugin All in One WP Security
+/wp-content/aiowps_backups/
+# Các file backup
+/wp-content/backup-*.zip
+
+# Bỏ qua các file rác hoặc liên quan đến phát triển
+.env # File môi trường
+.DS_Store # File của macOS
+.vscode/ # Thư mục cấu hình VS Code
+.idea/ # Thư mục cấu hình WebStorm/PhpStorm
+node_modules/ # Thư mục node_modules
+*.log # File log
+*.zip # File nén (trừ khi là plugin/theme custom của bạn)
+*.tar.gz
+*.rar
+*.sql # File database
