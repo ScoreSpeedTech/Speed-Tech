@@ -3,7 +3,14 @@
     width: 100%;
     border-collapse: collapse;
     text-align: left;
+    color: #ffffff;
 }
+
+.spt-cart-page-widget .spt-cart-table thead {    
+    text-align: center;
+    color: #ffffff;
+}
+ 
 
 .spt-cart-page-widget .spt-cart-table th,
 .spt-cart-page-widget .spt-cart-table td {
@@ -14,11 +21,6 @@
 
 .spt-cart-page-widget .spt-cart-table th {
     font-weight: bold;
-}
-
-.spt-cart-page-widget .spt-cart-table th.product-name, .spt-cart-page-widget .spt-cart-table th.product-category, .spt-cart-page-widget .spt-cart-table th.product-price, .spt-cart-page-widget .spt-cart-table th.product-actions {
-    text-align: center;
-    color: #ffffff;
 }
 
 .spt-cart-page-widget .spt-product-info {

@@ -413,7 +413,7 @@ class SpeedTech_Widget_Cart_Page extends Widget_Base {
                                         
                                         // 1. Render icon vào một biến
                                         ob_start();
-                                        Icons_Manager::render_icon( $settings['remove_icon'], [ 'aria-hidden' => 'true' ] );
+                                        Icons_Manager::render_icon( $settings['remove_icon'], [ 'aria-hidden' => 'false' ] );
                                         $icon_html = ob_get_clean();
 
                                         // 2. Tạo thẻ a hoàn chỉnh với icon bên trong
