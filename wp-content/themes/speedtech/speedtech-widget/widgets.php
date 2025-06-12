@@ -18,6 +18,7 @@ class SpeedTech_Elementor_Widgets
     protected function __construct()
     {
         require_once 'widget_popup_account.php';
+        require_once 'widget_cart_page.php';
 
         // add_action('elementor/widgets/register', 'custom_unregister_elementor_widgets');
         // function custom_unregister_elementor_widgets($obj)
