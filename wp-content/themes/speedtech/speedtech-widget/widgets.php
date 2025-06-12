@@ -31,6 +31,7 @@ class SpeedTech_Elementor_Widgets
     public function register_widgets()
     {
         \Elementor\Plugin::instance()->widgets_manager->register_widget_type(new \Elementor\SpeedTech_Widget_Popup_Account());
+        \Elementor\Plugin::instance()->widgets_manager->register_widget_type(new \Elementor\SpeedTech_Widget_Cart_Page());
     }
 }
 

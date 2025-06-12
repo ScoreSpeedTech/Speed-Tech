@@ -8,11 +8,17 @@
 .spt-cart-page-widget .spt-cart-table th,
 .spt-cart-page-widget .spt-cart-table td {
     padding: 15px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 0px solid #eee;
+    border: 0px;
 }
 
 .spt-cart-page-widget .spt-cart-table th {
     font-weight: bold;
+}
+
+.spt-cart-page-widget .spt-cart-table th.product-name, .spt-cart-page-widget .spt-cart-table th.product-category, .spt-cart-page-widget .spt-cart-table th.product-price, .spt-cart-page-widget .spt-cart-table th.product-actions {
+    text-align: center;
+    color: #ffffff;
 }
 
 .spt-cart-page-widget .spt-product-info {
@@ -33,8 +39,8 @@
 
 .spt-cart-page-widget .spt-product-title a {
     text-decoration: none;
-    color: #333;
-    font-weight: 500;
+    color: #ffffff;
+    font-weight: 700;
 }
 
 .spt-cart-page-widget .spt-product-title a:hover {
@@ -64,7 +70,7 @@
 }
 
 .spt-cart-page-widget .spt-remove-item {
-    color: #a00;
+    color: #ffffff;
     font-size: 20px;
     text-decoration: none;
     transition: color 0.3s;

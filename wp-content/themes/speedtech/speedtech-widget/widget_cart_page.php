@@ -55,11 +55,12 @@ class SpeedTech_Widget_Cart_Page extends Widget_Base {
     }
 
     protected function _register_controls() {
-        // === Section: General Settings ===
+        // === Section: Content Settings ===
         $this->start_controls_section(
-            'section_general_settings',
+            'section_content_settings',
             [
-                'label' => esc_html__( 'General Settings', 'speedtech' ),
+                'label' => esc_html__( 'Content Settings', 'speedtech' ),
+                'tab' => Controls_Manager::TAB_CONTENT,
             ]
         );
 
@@ -87,13 +88,113 @@ class SpeedTech_Widget_Cart_Page extends Widget_Base {
             ]
         );
 
+        $this->add_control(
+			'button_text',
+			[
+				'label' => esc_html__( '"Order Now" Button Text', 'speedtech' ),
+				'type' => \Elementor\Controls_Manager::TEXT,
+				'default' => esc_html__( 'Đặt hàng ngay', 'speedtech' ),
+                'dynamic' => [
+					'active' => true,
+				],
+                'label_block' => true,
+			]
+		);
+
         $this->end_controls_section();
 
-        // === Section: Table Styling ===
+        // === Section: Column Content Styling ===
         $this->start_controls_section(
-            'section_table_style',
+            'section_column_content_style',
             [
-                'label' => esc_html__( 'Table Styling', 'speedtech' ),
+                'label' => esc_html__( 'Column Content Styling', 'speedtech' ),
+                'tab' => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->start_controls_tabs( 'column_style_tabs' );
+
+        // Tab cho cột "Tên sản phẩm"
+        $this->start_controls_tab('tab_product_column_style', ['label' => esc_html__( 'Product', 'speedtech' )]);
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            ['name' => 'product_typography', 'selector' => '{{WRAPPER}} .spt-cart-table td.product-name']
+        );
+        $this->add_control(
+            'product_color',
+            ['label' => esc_html__( 'Color', 'speedtech' ), 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .spt-cart-table td.product-name, {{WRAPPER}} .spt-cart-table td.product-name a' => 'color: {{VALUE}};']]
+        );
+        $this->add_responsive_control(
+            'product_h_align',
+            ['label' => esc_html__( 'Horizontal Align', 'speedtech' ), 'type' => Controls_Manager::CHOOSE, 'options' => ['left' => ['title' => esc_html__( 'Left', 'speedtech' ), 'icon' => 'eicon-text-align-left'], 'center' => ['title' => esc_html__( 'Center', 'speedtech' ), 'icon' => 'eicon-text-align-center'], 'right' => ['title' => esc_html__( 'Right', 'speedtech' ), 'icon' => 'eicon-text-align-right']], 'selectors' => ['{{WRAPPER}} .spt-cart-table td.product-name' => 'text-align: {{VALUE}};']]
+        );
+        $this->add_responsive_control(
+            'product_v_align',
+            ['label' => esc_html__( 'Vertical Align', 'speedtech' ), 'type' => Controls_Manager::CHOOSE, 'options' => ['top' => ['title' => esc_html__( 'Top', 'speedtech' ), 'icon' => 'eicon-v-align-top'], 'middle' => ['title' => esc_html__( 'Middle', 'speedtech' ), 'icon' => 'eicon-v-align-middle'], 'bottom' => ['title' => esc_html__( 'Bottom', 'speedtech' ), 'icon' => 'eicon-v-align-bottom']], 'selectors' => ['{{WRAPPER}} .spt-cart-table td.product-name' => 'vertical-align: {{VALUE}};'], 'default' => 'middle']
+        );
+        $this->end_controls_tab();
+
+        // Tab cho cột "Tên danh mục"
+        $this->start_controls_tab('tab_category_column_style', ['label' => esc_html__( 'Category', 'speedtech' )]);
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            ['name' => 'category_typography', 'selector' => '{{WRAPPER}} .spt-cart-table td.product-category']
+        );
+        $this->add_control(
+            'category_color',
+            ['label' => esc_html__( 'Color', 'speedtech' ), 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .spt-cart-table td.product-category, {{WRAPPER}} .spt-cart-table td.product-category a' => 'color: {{VALUE}};']]
+        );
+        $this->add_responsive_control(
+            'category_h_align',
+            ['label' => esc_html__( 'Horizontal Align', 'speedtech' ), 'type' => Controls_Manager::CHOOSE, 'options' => ['left' => ['title' => esc_html__( 'Left', 'speedtech' ), 'icon' => 'eicon-text-align-left'], 'center' => ['title' => esc_html__( 'Center', 'speedtech' ), 'icon' => 'eicon-text-align-center'], 'right' => ['title' => esc_html__( 'Right', 'speedtech' ), 'icon' => 'eicon-text-align-right']], 'selectors' => ['{{WRAPPER}} .spt-cart-table td.product-category' => 'text-align: {{VALUE}};'], 'default' => 'center']
+        );
+        $this->add_responsive_control(
+            'category_v_align',
+            ['label' => esc_html__( 'Vertical Align', 'speedtech' ), 'type' => Controls_Manager::CHOOSE, 'options' => ['top' => ['title' => esc_html__( 'Top', 'speedtech' ), 'icon' => 'eicon-v-align-top'], 'middle' => ['title' => esc_html__( 'Middle', 'speedtech' ), 'icon' => 'eicon-v-align-middle'], 'bottom' => ['title' => esc_html__( 'Bottom', 'speedtech' ), 'icon' => 'eicon-v-align-bottom']], 'selectors' => ['{{WRAPPER}} .spt-cart-table td.product-category' => 'vertical-align: {{VALUE}};'], 'default' => 'middle']
+        );
+        $this->end_controls_tab();
+
+        // Tab cho cột "Giá"
+        $this->start_controls_tab('tab_price_column_style', ['label' => esc_html__( 'Price', 'speedtech' )]);
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            ['name' => 'price_typography', 'selector' => '{{WRAPPER}} .spt-cart-table td.product-price']
+        );
+        $this->add_control(
+            'price_color',
+            ['label' => esc_html__( 'Color', 'speedtech' ), 'type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .spt-cart-table td.product-price' => 'color: {{VALUE}};']]
+        );
+        $this->add_responsive_control(
+            'price_h_align',
+            ['label' => esc_html__( 'Horizontal Align', 'speedtech' ), 'type' => Controls_Manager::CHOOSE, 'options' => ['left' => ['title' => esc_html__( 'Left', 'speedtech' ), 'icon' => 'eicon-text-align-left'], 'center' => ['title' => esc_html__( 'Center', 'speedtech' ), 'icon' => 'eicon-text-align-center'], 'right' => ['title' => esc_html__( 'Right', 'speedtech' ), 'icon' => 'eicon-text-align-right']], 'selectors' => ['{{WRAPPER}} .spt-cart-table td.product-price' => 'text-align: {{VALUE}};'], 'default' => 'center']
+        );
+        $this->add_responsive_control(
+            'price_v_align',
+            ['label' => esc_html__( 'Vertical Align', 'speedtech' ), 'type' => Controls_Manager::CHOOSE, 'options' => ['top' => ['title' => esc_html__( 'Top', 'speedtech' ), 'icon' => 'eicon-v-align-top'], 'middle' => ['title' => esc_html__( 'Middle', 'speedtech' ), 'icon' => 'eicon-v-align-middle'], 'bottom' => ['title' => esc_html__( 'Bottom', 'speedtech' ), 'icon' => 'eicon-v-align-bottom']], 'selectors' => ['{{WRAPPER}} .spt-cart-table td.product-price' => 'vertical-align: {{VALUE}};'], 'default' => 'middle']
+        );
+        $this->end_controls_tab();
+
+        // Tab cho cột "Thao tác"
+        $this->start_controls_tab('tab_actions_column_style', ['label' => esc_html__( 'Actions', 'speedtech' )]);
+        $this->add_responsive_control(
+            'actions_h_align',
+            ['label' => esc_html__( 'Horizontal Align', 'speedtech' ), 'type' => Controls_Manager::CHOOSE, 'options' => ['flex-start' => ['title' => esc_html__( 'Left', 'speedtech' ), 'icon' => 'eicon-text-align-left'], 'center' => ['title' => esc_html__( 'Center', 'speedtech' ), 'icon' => 'eicon-text-align-center'], 'flex-end' => ['title' => esc_html__( 'Right', 'speedtech' ), 'icon' => 'eicon-text-align-right']], 'selectors' => ['{{WRAPPER}} .spt-cart-table td.product-actions .spt-actions-wrapper' => 'justify-content: {{VALUE}};'], 'default' => 'center']
+        );
+        $this->add_responsive_control(
+            'actions_v_align',
+            ['label' => esc_html__( 'Vertical Align', 'speedtech' ), 'type' => Controls_Manager::CHOOSE, 'options' => ['top' => ['title' => esc_html__( 'Top', 'speedtech' ), 'icon' => 'eicon-v-align-top'], 'middle' => ['title' => esc_html__( 'Middle', 'speedtech' ), 'icon' => 'eicon-v-align-middle'], 'bottom' => ['title' => esc_html__( 'Bottom', 'speedtech' ), 'icon' => 'eicon-v-align-bottom']], 'selectors' => ['{{WRAPPER}} .spt-cart-table td.product-actions' => 'vertical-align: {{VALUE}};'], 'default' => 'middle']
+        );
+        $this->end_controls_tab();
+        
+        $this->end_controls_tabs();
+
+        $this->end_controls_section();
+
+        // === Section: Table Header Styling ===
+        $this->start_controls_section(
+            'section_table_header_style',
+            [
+                'label' => esc_html__( 'Table Header Styling', 'speedtech' ),
                 'tab' => Controls_Manager::TAB_STYLE,
             ]
         );
@@ -106,15 +207,6 @@ class SpeedTech_Widget_Cart_Page extends Widget_Base {
                 'selector' => '{{WRAPPER}} .spt-cart-table th',
             ]
         );
-
-        $this->add_group_control(
-			Group_Control_Typography::get_type(),
-			[
-				'name' => 'table_content_typography',
-				'label' => esc_html__( 'Content Typography', 'speedtech' ),
-				'selector' => '{{WRAPPER}} .spt-cart-table td',
-			]
-		);
 
         $this->end_controls_section();
 
@@ -245,16 +337,12 @@ class SpeedTech_Widget_Cart_Page extends Widget_Base {
     }
 
     protected function render() {
-        // Kiểm tra nếu WooCommerce chưa được kích hoạt
         if ( ! class_exists( 'WooCommerce' ) ) {
             echo '<div class="elementor-alert elementor-alert-danger">' . esc_html__( 'WooCommerce is not activated.', 'speedtech' ) . '</div>';
             return;
         }
 
-        // Lấy giỏ hàng của WooCommerce
         $cart = WC()->cart;
-
-        // Nếu giỏ hàng trống, hiển thị template mặc định của Woo
         if ( $cart->is_empty() ) {
             wc_get_template( 'cart/cart-empty.php' );
             return;
@@ -288,22 +376,13 @@ class SpeedTech_Widget_Cart_Page extends Widget_Base {
                                             <div class="spt-product-thumbnail">
                                                 <?php
                                                 $thumbnail = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key );
-                                                if ( ! $product_permalink ) {
-                                                    echo $thumbnail;
-                                                } else {
-                                                    printf( '<a href="%s">%s</a>', esc_url( $product_permalink ), $thumbnail );
-                                                }
+                                                echo ! $product_permalink ? $thumbnail : sprintf( '<a href="%s">%s</a>', esc_url( $product_permalink ), $thumbnail );
                                                 ?>
                                             </div>
                                         <?php endif; ?>
                                         <div class="spt-product-title">
                                             <?php
-                                            if ( ! $product_permalink ) {
-                                                echo wp_kses_post( $_product->get_name() );
-                                            } else {
-                                                echo wp_kses_post( sprintf( '<a href="%s">%s</a>', esc_url( $product_permalink ), $_product->get_name() ) );
-                                            }
-                                            // Meta data
+                                            echo ! $product_permalink ? wp_kses_post( $_product->get_name() ) : wp_kses_post( sprintf( '<a href="%s">%s</a>', esc_url( $product_permalink ), $_product->get_name() ) );
                                             echo wc_get_formatted_cart_item_data( $cart_item );
                                             ?>
                                         </div>
@@ -321,26 +400,35 @@ class SpeedTech_Widget_Cart_Page extends Widget_Base {
                                 <td class="product-actions" data-title="<?php esc_attr_e( 'Actions', 'speedtech' ); ?>">
                                     <div class="spt-actions-wrapper">
                                         <?php
-                                        // Nút Đặt hàng ngay
                                         $buy_now_url = add_query_arg( 'spt_buy_now', $product_id, wc_get_checkout_url() );
                                         ?>
                                         <a href="<?php echo esc_url( $buy_now_url ); ?>" class="button spt-button-order-now">
-                                            <?php esc_html_e( 'Đặt hàng ngay', 'speedtech' ); ?>
+                                            <?php 
+                                            echo esc_html( $settings['button_text'] ); 
+                                            ?>
                                         </a>
 
                                         <?php
-                                        // Biểu tượng xóa
                                         $remove_url = wc_get_cart_remove_url( $cart_item_key );
-                                        echo apply_filters( 'woocommerce_cart_item_remove_link', sprintf(
-                                            '<a href="%s" class="spt-remove-item" aria-label="%s" data-product_id="%s" data-product_sku="%s" data-cart_item_key="%s">',
+                                        
+                                        // 1. Render icon vào một biến
+                                        ob_start();
+                                        Icons_Manager::render_icon( $settings['remove_icon'], [ 'aria-hidden' => 'true' ] );
+                                        $icon_html = ob_get_clean();
+
+                                        // 2. Tạo thẻ a hoàn chỉnh với icon bên trong
+                                        $remove_link_html = sprintf(
+                                            '<a href="%s" class="spt-remove-item" aria-label="%s" data-product_id="%s" data-product_sku="%s" data-cart_item_key="%s">%s</a>',
                                             esc_url( $remove_url ),
-                                            esc_html__( 'Remove this item', 'speedtech' ),
+                                            esc_attr__( 'Remove this item', 'speedtech' ),
                                             esc_attr( $product_id ),
                                             esc_attr( $_product->get_sku() ),
-                                            esc_attr( $cart_item_key )
-                                        ), $cart_item_key );
-                                        Icons_Manager::render_icon( $settings['remove_icon'], [ 'aria-hidden' => 'true' ] );
-                                        echo '</a>';
+                                            esc_attr( $cart_item_key ),
+                                            $icon_html // Đưa HTML của icon vào đây
+                                        );
+
+                                        // 3. Áp dụng filter cho thẻ a đã hoàn chỉnh và hiển thị
+                                        echo apply_filters( 'woocommerce_cart_item_remove_link', $remove_link_html, $cart_item_key );
                                         ?>
                                     </div>
                                 </td>
@@ -355,8 +443,5 @@ class SpeedTech_Widget_Cart_Page extends Widget_Base {
         <?php
     }
 
-    protected function _content_template() {
-        // Live preview trong Elementor editor sẽ được xử lý bằng JS nếu cần.
-        // Để đơn giản, phần này có thể để trống và widget sẽ hiển thị đầy đủ khi refresh.
-    }
+    protected function _content_template() {}
 }
