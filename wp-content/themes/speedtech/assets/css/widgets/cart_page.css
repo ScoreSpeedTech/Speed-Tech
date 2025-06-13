@@ -3,25 +3,29 @@
     width: 100%;
     border-collapse: collapse;
     text-align: left;
-    color: #ffffff;
 }
-
-.spt-cart-page-widget .spt-cart-table thead {    
-    text-align: center;
-    color: #ffffff;
-}
- 
 
 .spt-cart-page-widget .spt-cart-table th,
 .spt-cart-page-widget .spt-cart-table td {
     padding: 15px;
-    border-bottom: 0px solid #eee;
-    border: 0px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle; /* Căn giữa theo chiều dọc */
 }
 
 .spt-cart-page-widget .spt-cart-table th {
     font-weight: bold;
 }
+
+.spt-cart-page-widget .spt-cart-table .product-name {
+    text-align: left;
+}
+
+.spt-cart-page-widget .spt-cart-table .product-category,
+.spt-cart-page-widget .spt-cart-table .product-price,
+.spt-cart-page-widget .spt-cart-table .product-actions {
+    text-align: center;
+}
+
 
 .spt-cart-page-widget .spt-product-info {
     display: flex;
@@ -41,8 +45,8 @@
 
 .spt-cart-page-widget .spt-product-title a {
     text-decoration: none;
-    color: #ffffff;
-    font-weight: 700;
+    color: #333;
+    font-weight: 500;
 }
 
 .spt-cart-page-widget .spt-product-title a:hover {
@@ -52,34 +56,50 @@
 .spt-cart-page-widget .spt-actions-wrapper {
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
+    gap: 15px; /* Khoảng cách giữa các nút */
 }
 
 .spt-cart-page-widget .spt-button-order-now {
     display: inline-block;
     padding: 8px 15px;
     background-color: #0073aa;
-    color: #fff;
+    color: #fff !important; /* Đảm bảo màu chữ luôn là trắng */
     text-decoration: none;
     border-radius: 4px;
     font-size: 14px;
-    margin-right: 10px;
-    transition: background-color 0.3s;
+    text-align: center;
+    white-space: nowrap;
 }
 
 .spt-cart-page-widget .spt-button-order-now:hover {
     background-color: #005a87;
 }
 
+/* Style chung cho thẻ a chứa icon xóa */
 .spt-cart-page-widget .spt-remove-item {
-    color: #ffffff;
-    font-size: 20px;
+    color: #a00;
     text-decoration: none;
     transition: color 0.3s;
+    display: inline-flex;
+    align-items: center;
 }
 
 .spt-cart-page-widget .spt-remove-item:hover {
     color: #ff0000;
+}
+
+/* Style riêng cho icon dạng FONT (thẻ i) */
+.spt-cart-page-widget .spt-remove-item i {
+    font-size: 20px;
+    line-height: 1;
+}
+
+/* Style riêng cho icon dạng SVG (thẻ svg) */
+.spt-cart-page-widget .spt-remove-item svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
 }
 
 /* Spinner for AJAX loading */
