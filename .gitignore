@@ -50,3 +50,4 @@ node_modules/ # Thư mục node_modules
 *.tar.gz
 *.rar
 *.sql # File database
+/wp-content/plugins
