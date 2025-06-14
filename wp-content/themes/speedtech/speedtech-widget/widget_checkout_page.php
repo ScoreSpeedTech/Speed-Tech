@@ -68,9 +68,16 @@ class SpeedTech_Widget_Checkout_Page extends Widget_Base {
             'options' => [ 'text' => 'Text', 'email' => 'Email', 'password' => 'Password', 'date' => 'Date', 'radio' => 'Radio', 'file' => 'File Upload' ],
             'default' => 'text',
         ]);
+        
+        // **NÂNG CẤP MỚI**: Thêm tùy chọn bắt buộc nhập
+        $repeater->add_control('is_required', [
+            'label' => 'Bắt buộc?', 'type' => Controls_Manager::SWITCHER,
+            'label_on' => 'Có', 'label_off' => 'Không',
+            'return_value' => 'yes', 'default' => '',
+        ]);
+
         $repeater->add_control('radio_options', ['label' => 'Radio Options', 'type' => Controls_Manager::TEXTAREA, 'description' => 'Mỗi lựa chọn trên một dòng. Định dạng: value|Text', 'conditions' => ['terms' => [['name' => 'field_type', 'operator' => '==', 'value' => 'radio']]]]);
 
-        // **NÂNG CẤP MỚI**: Thêm các control tùy chỉnh style cho từng trường
         $repeater->start_controls_tabs('field_styles_tabs');
         $repeater->start_controls_tab('field_style_normal', ['label' => 'Styling']);
         $repeater->add_control('field_label_color', ['label' => 'Label Color','type' => Controls_Manager::COLOR, 'selectors' => ['{{WRAPPER}} .elementor-repeater-item-{{_id}} label' => 'color: {{VALUE}};']]);
@@ -85,14 +92,14 @@ class SpeedTech_Widget_Checkout_Page extends Widget_Base {
             'label' => 'Add and Customize Fields', 'type' => Controls_Manager::REPEATER,
             'fields' => $repeater->get_controls(),
             'default' => [
-                ['field_id' => 'billing_email', 'field_label' => 'Địa chỉ Email', 'field_type' => 'email'],
-                ['field_id' => 'account_password', 'field_label' => 'Mật khẩu', 'field_type' => 'password'],
+                ['field_id' => 'billing_email', 'field_label' => 'Địa chỉ Email', 'field_type' => 'email', 'is_required' => 'yes'],
+                ['field_id' => 'account_password', 'field_label' => 'Mật khẩu', 'field_type' => 'password', 'is_required' => 'yes'],
                 ['field_id' => 'spt-date-start', 'field_label' => 'Ngày bắt đầu', 'field_type' => 'date'],
-                ['field_id' => 'spt-company-name', 'field_label' => 'Tên công ty', 'field_type' => 'text'],
+                ['field_id' => 'spt-company-name', 'field_label' => 'Tên công ty', 'field_type' => 'text', 'is_required' => 'yes'],
                 ['field_id' => 'spt-main-color', 'field_label' => 'Màu sắc chủ đạo', 'field_type' => 'radio', 'radio_options' => "red|Màu Đỏ\nblue|Màu Xanh\ngreen|Màu Lá"],
                 ['field_id' => 'spt-logo', 'field_label' => 'Tải lên Logo', 'field_type' => 'file'],
             ],
-            'title_field' => '{{{ field_label }}} ({{{ field_type }}})',
+            'title_field' => '{{{ field_label }}} ({{{ field_type }}}) {{{ is_required === "yes" ? "(*)" : "" }}}',
         ]);
         $this->end_controls_section();
     }
@@ -103,7 +110,10 @@ class SpeedTech_Widget_Checkout_Page extends Widget_Base {
         $cart = WC()->cart;
         if ( $cart->is_empty() ) { wc_get_template( 'cart/cart-empty.php' ); return; }
 
-        echo '<div class="spt-checkout-wrapper-v9">';
+        $is_user_logged_in = is_user_logged_in();
+        $current_user = wp_get_current_user();
+
+        echo '<div class="spt-checkout-wrapper-v10">'; // Updated version class
         
         // --- Phần 1: Tóm tắt đơn hàng ---
         echo '<h2>' . esc_html__('Tóm tắt đơn hàng', 'speedtech') . '</h2>';
@@ -137,9 +147,18 @@ class SpeedTech_Widget_Checkout_Page extends Widget_Base {
 
         if ( ! empty( $settings['form_fields'] ) ) {
             foreach ( $settings['form_fields'] as $field ) {
-                echo '<p class="form-row elementor-repeater-item-' . esc_attr($field['_id']) . '" id="'.esc_attr($field['field_id']).'_field">';
-                echo '<label for="'.esc_attr($field['field_id']).'">'.esc_html($field['field_label']).'</label>';
-                $this->render_field_html( $field );
+                // **LOGIC MỚI**: Ẩn trường mật khẩu nếu đã đăng nhập
+                if ( $field['field_type'] === 'password' && $is_user_logged_in ) {
+                    continue; // Bỏ qua không render trường mật khẩu
+                }
+
+                $field_id_attr = esc_attr($field['field_id']);
+                $label = esc_html($field['field_label']);
+                $required_span = ($field['is_required'] === 'yes') ? ' <abbr class="required" title="bắt buộc">*</abbr>' : '';
+
+                echo '<p class="form-row elementor-repeater-item-' . esc_attr($field['_id']) . '" id="'.$field_id_attr.'_field">';
+                echo '<label for="'.$field_id_attr.'">'.$label. $required_span .'</label>';
+                $this->render_field_html( $field, $is_user_logged_in, $current_user );
                 echo '</p>';
             }
         }
@@ -166,12 +185,31 @@ class SpeedTech_Widget_Checkout_Page extends Widget_Base {
              echo '<input type="hidden" name="cart_item_key" value="' . esc_attr( $_GET['cart_item_key'] ) . '" />';
         }
 
+        // Truyền các trường bắt buộc tới backend qua một trường ẩn
+        $required_fields_json = wp_json_encode(array_reduce($settings['form_fields'], function($carry, $field) {
+            if ($field['is_required'] === 'yes') {
+                $carry[] = $field['field_id'];
+            }
+            return $carry;
+        }, []));
+        echo '<input type="hidden" name="spt_required_fields" value="' . esc_attr($required_fields_json) . '" />';
+
+
         echo '</form>';
         echo '</div>';
     }
 
-    private function render_field_html( $field ) {
+    private function render_field_html( $field, $is_user_logged_in, $current_user ) {
         $id = esc_attr($field['field_id']);
+        $value = '';
+        $extra_attrs = '';
+
+        // **LOGIC MỚI**: Tự điền email và khóa trường nếu đã đăng nhập
+        if ($field['field_type'] === 'email' && $is_user_logged_in) {
+            $value = $current_user->user_email;
+            $extra_attrs = ' readonly';
+        }
+
         switch ($field['field_type']) {
             case 'radio':
                 $options = explode("\n", $field['radio_options']);
@@ -179,9 +217,9 @@ class SpeedTech_Widget_Checkout_Page extends Widget_Base {
                 foreach ($options as $option) {
                     $parts = explode('|', $option);
                     if (count($parts) === 2) {
-                        $value = esc_attr(trim($parts[0]));
+                        $option_value = esc_attr(trim($parts[0]));
                         $text = esc_html(trim($parts[1]));
-                        echo '<label class="radio"><input type="radio" name="'.$id.'" value="'.$value.'"> '.$text.'</label>';
+                        echo '<label class="radio"><input type="radio" name="'.$id.'" value="'.$option_value.'"> '.$text.'</label>';
                     }
                 }
                 echo '</span>';
@@ -191,7 +229,7 @@ class SpeedTech_Widget_Checkout_Page extends Widget_Base {
                 break;
             default:
                 $type = esc_attr($field['field_type']);
-                echo '<span class="woocommerce-input-wrapper"><input type="'.$type.'" class="input-text" name="'.$id.'" id="'.$id.'"></span>';
+                echo '<span class="woocommerce-input-wrapper"><input type="'.$type.'" class="input-text" name="'.$id.'" id="'.$id.'" value="'.esc_attr($value).'"'.$extra_attrs.'></span>';
                 break;
         }
     }

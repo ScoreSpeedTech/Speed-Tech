@@ -63,17 +63,12 @@ add_action( 'wp', 'disable_comments_on_non_single_pages' );
  */
 add_filter( 'woocommerce_add_to_cart_validation', 'spt_prevent_duplicate_products_in_cart', 20, 3 );
 function spt_prevent_duplicate_products_in_cart( $passed, $product_id, $quantity ) {
-    // Lặp qua giỏ hàng để kiểm tra
     foreach ( WC()->cart->get_cart() as $cart_item ) {
-        // Kiểm tra cả sản phẩm đơn giản và sản phẩm có biến thể
         if ( $cart_item['product_id'] == $product_id ) {
-            // Nếu tìm thấy sản phẩm trùng lặp, hiển thị thông báo lỗi
             wc_add_notice( __( 'Sản phẩm này đã có trong giỏ hàng. Bạn chỉ có thể thêm mỗi sản phẩm một lần.', 'speedtech' ), 'error' );
-            // Trả về false để ngăn sản phẩm được thêm vào
             return false;
         }
     }
-    // Nếu không tìm thấy, cho phép thêm vào giỏ hàng
     return $passed;
 }
 
@@ -106,24 +101,54 @@ function spt_process_checkout_ajax_handler() {
     $messages = [];
     $error_fields = [];
     $posted_data = wp_unslash($_POST);
+    $is_user_logged_in = is_user_logged_in();
 
     // --- Bắt đầu xác thực dữ liệu ---
+    
+    // Lấy danh sách các trường bắt buộc từ form
+    $required_fields = isset($posted_data['spt_required_fields']) ? json_decode($posted_data['spt_required_fields'], true) : [];
+
+    // **LOGIC VALIDATION MỚI**: Dựa trên danh sách trường bắt buộc
+    foreach ($required_fields as $field_id) {
+        // Bỏ qua validation mật khẩu nếu đã đăng nhập
+        if ($field_id === 'account_password' && $is_user_logged_in) {
+            continue;
+        }
+
+        if ($field_id === 'spt-logo') { // Xử lý cho trường file
+            if (empty($_FILES[$field_id]['name'])) {
+                $error_fields[$field_id] = 'Vui lòng tải lên file cho trường này.';
+            }
+        } else { // Xử lý cho các trường khác
+            if (empty($posted_data[$field_id])) {
+                $error_fields[$field_id] = 'Đây là trường bắt buộc.';
+            }
+        }
+    }
+    
+    // Validation riêng cho các trường cụ thể
     if ( empty($posted_data['billing_email']) || ! is_email($posted_data['billing_email']) ) {
         $error_fields['billing_email'] = 'Vui lòng nhập một địa chỉ email hợp lệ.';
     }
-    if ( empty($posted_data['account_password']) ) {
-         $error_fields['account_password'] = 'Vui lòng nhập mật khẩu.';
+
+    // **VALIDATION MẬT KHẨU NÂNG CAO**: Chỉ kiểm tra nếu người dùng chưa đăng nhập
+    if ( ! $is_user_logged_in && in_array('account_password', $required_fields) ) {
+        $password = $posted_data['account_password'];
+        $pattern = '/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/';
+        if ( empty($password) ) {
+            $error_fields['account_password'] = 'Vui lòng nhập mật khẩu.';
+        } elseif ( strlen($password) < 8 ) {
+            $error_fields['account_password'] = 'Mật khẩu phải có ít nhất 8 ký tự.';
+        } elseif ( !preg_match($pattern, $password) ) {
+            $error_fields['account_password'] = 'Mật khẩu phải bao gồm chữ, số và ký tự đặc biệt (@$!%*?&).';
+        }
     }
-    // ... Thêm các quy tắc xác thực cho các trường khác ở đây ...
-    // Ví dụ:
-    if ( empty($posted_data['spt-company-name']) ) {
-         $error_fields['spt-company-name'] = 'Vui lòng nhập tên công ty.';
-    }
+
     if ( empty($posted_data['payment_method']) ) {
          $messages[] = 'Vui lòng chọn một phương thức thanh toán.';
     }
 
-    // Xác thực file upload
+    // Xác thực file upload (nếu có)
     if (isset($_FILES['spt-logo']) && !empty($_FILES['spt-logo']['name'])) {
         $file = $_FILES['spt-logo'];
         $allowed_mimes = ['image/jpeg', 'image/png', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
@@ -133,14 +158,11 @@ function spt_process_checkout_ajax_handler() {
         if ($file['size'] > 500 * 1024) { // 500KB
             $error_fields['spt-logo'] = 'Dung lượng file không được vượt quá 500KB.';
         }
-    } else if (isset($posted_data['spt-logo'])) { // Kiểm tra nếu trường file tồn tại trong form
-        $error_fields['spt-logo'] = 'Vui lòng tải lên logo của bạn.';
     }
 
     // --- Kết thúc xác thực ---
 
     if (!empty($error_fields) || !empty($messages)) {
-        // Gộp tất cả các lỗi vào một mảng chung để hiển thị
         $all_messages = array_merge($messages, array_values($error_fields));
         wp_send_json_error(['messages' => $all_messages, 'error_fields' => $error_fields]);
     }
@@ -152,15 +174,18 @@ function spt_process_checkout_ajax_handler() {
         foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
             $order->add_product( $cart_item['data'], $cart_item['quantity'] );
         }
-
-        $address = ['email' => sanitize_email($posted_data['billing_email'])];
+        
+        // **LOGIC MỚI**: Lấy email và user ID
+        $billing_email = sanitize_email($posted_data['billing_email']);
+        $address = ['email' => $billing_email];
         $order->set_address( $address, 'billing' );
         
-        // Tạo khách hàng mới nếu chưa đăng nhập
-        if ( ! is_user_logged_in() ) {
-            $user_id = email_exists( $address['email'] );
+        if ( $is_user_logged_in ) {
+            $order->set_customer_id( get_current_user_id() );
+        } else {
+            $user_id = email_exists( $billing_email );
             if ( ! $user_id ) {
-                $user_id = wc_create_new_customer( $address['email'], '', $posted_data['account_password'] );
+                $user_id = wc_create_new_customer( $billing_email, '', $posted_data['account_password'] );
                 if ( is_wp_error( $user_id ) ) {
                     throw new Exception( $user_id->get_error_message() );
                 }
@@ -169,21 +194,28 @@ function spt_process_checkout_ajax_handler() {
             $order->set_customer_id( $user_id );
         }
         
-        // Lưu các trường tùy chỉnh
+        // **LOGIC MỚI**: Lưu tất cả các trường tùy chỉnh bắt đầu bằng 'spt-'
         foreach ($posted_data as $key => $value) {
-            if (strpos($key, 'spt-') === 0 || in_array($key, ['spt-company-name', 'spt-slogan', 'spt-main-color'])) {
+            if (strpos($key, 'spt-') === 0 && $key !== 'spt_required_fields') {
                  $order->update_meta_data('_' . $key, sanitize_text_field($value));
             }
         }
+        // Lưu trường email và các trường woocommerce chuẩn khác nếu cần
+        $order->update_meta_data('_billing_email', $billing_email);
+
 
         // Xử lý file upload
-        if (isset($_FILES['spt-logo']) && !is_wp_error($_FILES['spt-logo'])) {
-            require_once(ABSPATH . 'wp-admin/includes/image.php');
-            require_once(ABSPATH . 'wp-admin/includes/file.php');
-            require_once(ABSPATH . 'wp-admin/includes/media.php');
-            $attachment_id = media_handle_upload('spt-logo', $order->get_id());
-            if (!is_wp_error($attachment_id)) {
-                $order->update_meta_data('_spt-logo', $attachment_id);
+        foreach ($_FILES as $key => $file) {
+            if (strpos($key, 'spt-') === 0 && !empty($file['name'])) {
+                require_once(ABSPATH . 'wp-admin/includes/image.php');
+                require_once(ABSPATH . 'wp-admin/includes/file.php');
+                require_once(ABSPATH . 'wp-admin/includes/media.php');
+                $attachment_id = media_handle_upload($key, $order->get_id());
+                if (!is_wp_error($attachment_id)) {
+                    $order->update_meta_data('_' . $key, $attachment_id);
+                } else {
+                     $order->add_order_note('Lỗi upload file ' . $key . ': ' . $attachment_id->get_error_message());
+                }
             }
         }
         
@@ -208,28 +240,55 @@ function spt_process_checkout_ajax_handler() {
     }
 }
 
-// Hàm hiển thị dữ liệu trên trang Cảm ơn và Admin (giữ nguyên)
-add_action( 'woocommerce_thankyou', 'spt_display_custom_data_on_thankyou_page', 20 );
-function spt_display_custom_data_on_thankyou_page( $order_id ) {
-    $order = wc_get_order( $order_id );
+// **Hàm hiển thị dữ liệu trên trang Cảm ơn và Admin (Nâng cấp)**
+function spt_display_custom_order_data( $order ) {
     if ( ! $order ) return;
-    $field_labels = [
-        '_spt-date-start'   => 'Ngày bắt đầu', '_spt-date-finish'  => 'Ngày kết thúc', '_spt-company-name' => 'Tên công ty', '_spt-slogan'       => 'Slogan', '_spt-main-color'   => 'Màu sắc chủ đạo', '_spt-logo'         => 'Logo',
-    ];
-    echo '<h2>' . __('Thông tin bổ sung', 'speedtech') . '</h2><div class="spt-order-meta-display">';
-    foreach ( $field_labels as $key => $label ) {
-        $value = $order->get_meta( $key );
-        if ( $value ) {
-            if ( $key == '_spt-logo' ) {
-                $file_url = wp_get_attachment_url( $value ); $file_name = get_the_title( $value );
-                echo '<p><strong>' . esc_html($label) . ':</strong> <a href="' . esc_url($file_url) . '" target="_blank">' . esc_html($file_name) . '</a></p>';
+
+    // Lấy tất cả metadata của đơn hàng
+    $meta_data = $order->get_meta_data();
+    $custom_data_to_display = [];
+
+    // Lọc những meta bắt đầu bằng '_spt-'
+    foreach ($meta_data as $meta) {
+        $data = $meta->get_data();
+        if (strpos($data['key'], '_spt-') === 0) {
+            $label = ucwords(str_replace(['_spt-', '-'], ' ', $data['key']));
+            $value = $data['value'];
+
+            // Xử lý hiển thị cho file upload
+            if (strpos($data['key'], '_spt-logo') !== false && is_numeric($value)) {
+                 $file_url = wp_get_attachment_url( $value );
+                 $file_name = get_the_title( $value ) ?: basename($file_url);
+                 $display_value = '<a href="' . esc_url($file_url) . '" target="_blank">' . esc_html($file_name) . '</a>';
             } else {
-                echo '<p><strong>' . esc_html($label) . ':</strong> ' . esc_html($value) . '</p>';
+                $display_value = esc_html($value);
             }
+            $custom_data_to_display[] = ['label' => $label, 'value' => $display_value];
         }
     }
-    echo '</div>';
+
+    if (empty($custom_data_to_display)) return;
+
+    echo '<h2>' . __('Thông tin bổ sung', 'speedtech') . '</h2>';
+    echo '<table class="woocommerce-table woocommerce-table--order-details shop_table order_details"><tbody>';
+    foreach ( $custom_data_to_display as $data_item ) {
+        echo '<tr><th>' . esc_html($data_item['label']) . ':</th><td>' . wp_kses_post($data_item['value']) . '</td></tr>';
+    }
+    echo '</tbody></table>';
 }
 
-//add_action( 'woocommerce_admin_order_data_after_billing_address', 'spt_display_metform_data_in_admin_order', 10, 1 );
-// ... (mã hàm spt_display_metform_data_in_admin_order, đổi tên nếu cần)
+
+// Hiển thị trên trang Cảm ơn
+add_action( 'woocommerce_thankyou', 'spt_display_custom_data_on_thankyou_page', 20, 1 );
+function spt_display_custom_data_on_thankyou_page( $order_id ) {
+    $order = wc_get_order( $order_id );
+    spt_display_custom_order_data($order);
+}
+
+// Hiển thị trong trang chi tiết đơn hàng ở Admin
+add_action( 'woocommerce_admin_order_data_after_billing_address', 'spt_display_custom_data_in_admin_order', 10, 1 );
+function spt_display_custom_data_in_admin_order( $order ){
+    echo '<div class="order_data_column">';
+    spt_display_custom_order_data($order);
+    echo '</div>';
+}

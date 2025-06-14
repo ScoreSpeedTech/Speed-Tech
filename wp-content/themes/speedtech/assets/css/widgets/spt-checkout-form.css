@@ -1,4 +1,4 @@
-/* FILE: /assets/css/spt-checkout-form.css */
+/* FILE: /assets/css/widgets/spt-checkout-form.css */
 
 /* Định dạng chung cho hộp thông báo lỗi */
 #spt-checkout-messages.woocommerce-error {
@@ -40,4 +40,13 @@
     margin-top: 5px;
     display: block;
     font-weight: normal;
+}
+
+/* **STYLE MỚI**: Định dạng cho dấu * của trường bắt buộc */
+.form-row label .required {
+    color: red;
+    font-weight: bold;
+    border: none;
+    text-decoration: none;
+    margin-left: 3px;
 }
