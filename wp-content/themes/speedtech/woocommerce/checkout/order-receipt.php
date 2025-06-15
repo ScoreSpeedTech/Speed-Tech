@@ -20,6 +20,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 
+<h2>Thông tin đơn hàng</h2>
+
 <ul class="order_details">
 	<li class="order">
 		<?php esc_html_e( 'Order number:', 'woocommerce' ); ?>

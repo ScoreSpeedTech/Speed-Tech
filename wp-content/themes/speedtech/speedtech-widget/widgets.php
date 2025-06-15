@@ -20,6 +20,7 @@ class SpeedTech_Elementor_Widgets
         require_once 'widget_popup_account.php';
         require_once 'widget_cart_page.php';
         require_once 'widget_checkout_page.php';
+        require_once 'widget_thank_you_page.php';
 
        
         add_action('elementor/widgets/register', [$this, 'register_widgets']);
@@ -30,6 +31,7 @@ class SpeedTech_Elementor_Widgets
         \Elementor\Plugin::instance()->widgets_manager->register_widget_type(new \Elementor\SpeedTech_Widget_Popup_Account());
         \Elementor\Plugin::instance()->widgets_manager->register_widget_type(new \Elementor\SpeedTech_Widget_Cart_Page());
         \Elementor\Plugin::instance()->widgets_manager->register_widget_type(new \Elementor\SpeedTech_Widget_Checkout_Page());
+        \Elementor\Plugin::instance()->widgets_manager->register( new \Elementor\SpeedTech_Widget_Thank_You_Page() );
     }
 }
 
