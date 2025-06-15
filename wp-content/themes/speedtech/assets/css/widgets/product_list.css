@@ -1,0 +1,36 @@
+/**
+ * CSS for Product List (SPT) Widget
+ * Version: 20.6
+ */
+
+.spt-product-list-widget .spt-product-list-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px;flex-wrap:wrap;gap:15px}
+.spt-product-list-header .spt-category-title h3{margin:0;font-size:24px;font-weight:700}
+.spt-product-list-header .spt-service-filter{display:flex;gap:8px}
+.spt-product-list-header .spt-service-filter button{background-color:#f0f0f0;border:1px solid #ddd;padding:8px 12px;cursor:pointer;border-radius:4px;transition:background-color .3s;line-height:1;display:inline-flex;align-items:center;justify-content:center;font-size:14px}
+.spt-product-list-header .spt-service-filter button:hover{background-color:#e0e0e0}
+.spt-product-list-header .spt-service-filter button.active{background-color:#0073aa;color:#fff;border-color:#0073aa}
+.spt-product-list-header .spt-service-filter button i,.spt-product-list-header .spt-service-filter button svg{font-size:16px;width:1em;height:1em}
+.spt-product-list-widget .spt-product-grid{display:grid;grid-gap:20px}
+.spt-product-item{display:flex;flex-direction:row;border:1px solid #eee;background:#fff;transition:box-shadow .3s ease;position:relative;overflow:hidden}
+.spt-product-item:hover{box-shadow:0 5px 15px rgba(0,0,0,.1)}
+.spt-product-image-wrapper{flex:0 0 33.33%;max-width:33.33%}
+.spt-product-image{position:relative;height:100%}
+.spt-product-image img{height:100%;width:100%;object-fit:cover}
+.spt-product-image .onsale{position:absolute;top:10px;left:10px}
+.spt-product-content-wrapper{flex:0 0 66.67%;max-width:66.67%;padding:15px;display:flex;flex-direction:column;text-align:left}
+.spt-product-content-wrapper .woocommerce-loop-product__title{font-size:18px;margin-bottom:10px}
+.spt-product-content-wrapper .woocommerce-loop-product__title a{text-decoration:none}
+.spt-product-price-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;font-weight:700}
+.spt-product-price-row .spt-price-title{opacity:.8}
+.spt-product-price-row .price{font-size:16px}
+.spt-product-price-row .price del{opacity:.7}
+.spt-product-price-row .price ins{color:#e43434;text-decoration:none}
+.spt-product-price-row .price a,.spt-product-price-row .price ins .amount{text-decoration:none!important}
+.spt-product-description{flex-grow:1;margin-bottom:15px;font-size:14px;color:#666}
+.spt-product-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:auto}
+.spt-product-actions .button{flex:1;min-width:120px;margin:0!important;text-align:center}
+.spt-product-actions .spt-buy-now-button{background-color:#e43434;color:#fff}
+.spt-product-actions .spt-buy-now-button:hover{background-color:#c42d2d}
+.spt-service-icon{position:absolute;top:10px;right:10px;z-index:2}
+.spt-service-icon i,.spt-service-icon svg{font-size:24px;color:#0073aa}
+@media (max-width:767px){.spt-product-item{flex-direction:column}.spt-product-image-wrapper,.spt-product-content-wrapper{max-width:100%}.spt-product-content-wrapper{padding:15px}}

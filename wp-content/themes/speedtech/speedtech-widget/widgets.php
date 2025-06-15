@@ -21,17 +21,19 @@ class SpeedTech_Elementor_Widgets
         require_once 'widget_cart_page.php';
         require_once 'widget_checkout_page.php';
         require_once 'widget_thank_you_page.php';
-
+        require_once 'widget_product_list.php'; 
        
         add_action('elementor/widgets/register', [$this, 'register_widgets']);
     }
 
     public function register_widgets()
     {
-        \Elementor\Plugin::instance()->widgets_manager->register_widget_type(new \Elementor\SpeedTech_Widget_Popup_Account());
-        \Elementor\Plugin::instance()->widgets_manager->register_widget_type(new \Elementor\SpeedTech_Widget_Cart_Page());
-        \Elementor\Plugin::instance()->widgets_manager->register_widget_type(new \Elementor\SpeedTech_Widget_Checkout_Page());
-        \Elementor\Plugin::instance()->widgets_manager->register( new \Elementor\SpeedTech_Widget_Thank_You_Page() );
+        // Đăng ký các widget
+        \Elementor\Plugin::instance()->widgets_manager->register(new \Elementor\SpeedTech_Widget_Popup_Account());
+        \Elementor\Plugin::instance()->widgets_manager->register(new \Elementor\SpeedTech_Widget_Cart_Page());
+        \Elementor\Plugin::instance()->widgets_manager->register(new \Elementor\SpeedTech_Widget_Checkout_Page());
+        \Elementor\Plugin::instance()->widgets_manager->register(new \Elementor\SpeedTech_Widget_Thank_You_Page());
+        \Elementor\Plugin::instance()->widgets_manager->register(new \Elementor\SpeedTech_Widget_Product_List());
     }
 }
 

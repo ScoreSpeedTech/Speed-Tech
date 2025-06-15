@@ -51,3 +51,4 @@ node_modules/ # Thư mục node_modules
 *.rar
 *.sql # File database
 /wp-content/plugins
+/wp-content/uploads/elementor
